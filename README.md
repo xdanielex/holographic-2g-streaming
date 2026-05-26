@@ -3,6 +3,16 @@
 An innovative C++ paradigm for real-time audio-video streaming designed to deliver stable $320\times240$ resolution at 15 fps over genuine, ultra-low bandwidth 2G GSM networks with high latency and heavy packet loss.
 [Download Full Technical Paper (PDF)](STREAMING2g.pdf)
 
+## 📋 System Prerequisites
+
+Before running the binaries, ensure your environment meets the following requirements:
+
+* **Operating System:** Windows 11 (64-bit) or Windows 10 (64-bit).
+* **FFmpeg Dependency:** FFmpeg must be installed on your system and added to your system's **PATH** environment variable. The framework relies on FFmpeg for underlying media handling and streaming pipelines.
+  * *Verification:* You can verify your installation by opening a command prompt and typing `ffmpeg -version`.
+
+---
+
 ## 📺 Live Video Demonstration
 
 [![Watch the 2G Holographic Streaming Demo](https://img.youtube.com/vi/2jCk43ZhJ_0/maxresdefault.jpg)](https://www.youtube.com/watch?v=2jCk43ZhJ_0)
