@@ -80,3 +80,24 @@ You can fine-tune the holographic compression pipeline using the comma-separated
 
 ---
 
+## 🤝 Commercial Inquiries & Collaborations
+This work is part of a potential patent disclosure. For inquiries regarding commercial licensing, production-grade implementations, or research collaborations, please contact the author at:
+xdaniele.rufox@gmail.com
+
+---
+*© 2026 - Continuous Keyframe-Free Holographic Compression 
+---
+
+---
+
+### Support my Research 🚀
+If you find this project useful for your benchmarks or academic evaluation, consider supporting my independent research:
+
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/xdanielex272)
+[![Donate with BTC](https://img.shields.io/badge/Donate-Bitcoin-orange.svg)](#)
+[![Donate with USDT](https://img.shields.io/badge/Donate-Tether-green.svg)](#)
+
+* **Bitcoin (BTC):** `bc1q4l9v8welwr6mp4g6uc2t7ex0n274malynq6yqj`
+* **Tether (USDT - TRC20):** `TA3m7pqk1mTgZtFQHf7KufAqnaqsN95kPh`
+
+---
