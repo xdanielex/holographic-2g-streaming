@@ -1,6 +1,6 @@
 # Continuous Keyframe-Free Holographic Compression for Real-Time Streaming
 
-An innovative C++ paradigm for real-time audio-video streaming designed to deliver stable $320\times240$ resolution at 15 fps over genuine, ultra-low bandwidth 2G GSM networks (9-20 kbps) with high latency and heavy packet loss.
+An innovative C++ paradigm for real-time audio-video streaming designed to deliver stable $320\times240$ resolution at 15 fps over genuine, ultra-low bandwidth 2G GSM networks with high latency and heavy packet loss.
 
 ## 📺 Live Video Demonstration
 
