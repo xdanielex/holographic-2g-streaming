@@ -98,6 +98,8 @@ If you use this research, the video codec concept, or the compiled binaries in a
 ```text
 Rufo, D. (2026). Continuous Keyframe-Free Holographic Compression for Real-Time Audio-Video Streaming over Ultra-Low Bandwidth 2G Networks (Version 1.0.0). Zenodo. [https://doi.org/10.5281/zenodo.20406856](https://doi.org/10.5281/zenodo.20406856)
 
+---
+
 ## 🤝 Commercial Inquiries & Collaborations
 This work is part of a potential patent disclosure. For inquiries regarding commercial licensing, production-grade implementations, or research collaborations, please contact the author at:
 xdaniele.rufox@gmail.com
