@@ -1,117 +1,163 @@
-# Continuous Keyframe-Free Holographic Compression for Real-Time Streaming
+# Continuous Keyframe-Free Compression for Real-Time Streaming
 
-An innovative C++ paradigm for real-time audio-video streaming designed to deliver stable $320\times240$ resolution at 15 fps over genuine, ultra-low bandwidth 2G GSM networks with high latency and heavy packet loss.
-[Download Full Technical Paper (PDF)](STREAMING2g.pdf)
+A C++ codec for real-time audio-video streaming engineered to deliver a **stable, smooth feed over genuine ultra-low-bandwidth 2G / EDGE networks** and high-cost satellite uplinks — links with high latency and heavy packet loss where conventional predictive codecs fail.
+
+[Download the full tech paper (PDF)](STREAMING2g.pdf)
+
+---
+
+## ✨ What's new in this version
+
+* **Genuine colour.** The earlier release operated close to monochrome. This version introduces **real, natural-colour video** without disturbing the low-bandwidth design: chrominance is carried as a low-resolution plane that is sent only when it actually changes, so a static background keeps its colour at almost no cost. On the **medium** profile it delivers true-colour audio-video that stays fluid on a real 2G/EDGE link.
+* **True-to-source implementation.** The README now documents the algorithm actually implemented (see *Core Innovation*) rather than an abstract model.
+
+---
 
 ## 📋 System Prerequisites
 
-Before running the binaries, ensure your environment meets the following requirements:
-
-* **Operating System:** Windows 11 (64-bit) or Windows 10 (64-bit).
-* **FFmpeg Dependency:** FFmpeg must be installed on your system and added to your system's **PATH** environment variable. The framework relies on FFmpeg for underlying media handling and streaming pipelines.
-  * *Verification:* You can verify your installation by opening a command prompt and typing `ffmpeg -version`.
+* **Operating System:** Windows 11 (64-bit) or Windows 10 (64-bit). *(The codec logic is platform-neutral; the streaming shell is Windows-centric.)*
+* **[OpenCV](https://opencv.org/)** — C++ headers and a prebuilt library (`opencv_world4xx.lib`) for MSVC.
+* **[zstd](https://facebook.github.io/zstd/)** — the entropy-compression library.
+* **FFmpeg / ffplay** — used for capture (DirectShow/Pulse), audio (Opus/OGG), and publishing. Must be added to your **PATH**.
+* **[MediaMTX](https://github.com/bluenviron/mediamtx/releases)** *(optional)* — the low-latency RTSP/WebRTC relay. Place `mediamtx.exe` in the same folder as the executable; the receiver auto-launches it.
 
 ---
 
 ## 📺 Live Video Demonstration
 
-[![Watch the 2G Holographic Streaming Demo](https://img.youtube.com/vi/2jCk43ZhJ_0/maxresdefault.jpg)](https://www.youtube.com/watch?v=2jCk43ZhJ_0)
+[![Watch the 2G Streaming Demo](https://img.youtube.com/vi/2jCk43ZhJ_0/maxresdefault.jpg)](https://www.youtube.com/watch?v=2jCk43ZhJ_0)
 
 ---
 
 ## 📝 Abstract
 
-This paper presents a real-time audio-video streaming system capable of delivering stable $640\times480$ resolution at 25 fps with synchronized audio over genuine 2G GSM networks (9-20 kbps, high packet loss, high latency). 
+A real-time audio-video streaming system for genuine low-bandwidth degraded links — 2G/EDGE cellular and high-cost satellite uplinks — where conventional predictive codecs fail. The design departs from the classic keyframe + inter-frame predictive model: frames are encoded as a sequence of **patch-level modes** that are autonomously decodable, so no picture depends on a long chain of earlier pictures. The result is a stream that **degrades gracefully under packet loss instead of freezing** — when fragments are dropped the effective frame rate dips and then recovers, but the transmission never stalls.
 
-The proposed method departs from conventional predictive codecs by eliminating keyframes entirely and introducing a continuous holographic compression model based on high-dimensional geometric embedding, adaptive multi-view projection, and sparse reconstruction. 
-
-The system exhibits intrinsic resilience to packet loss and bandwidth degradation, achieving graceful quality scaling instead of freezing or collapse. Experimental observations further indicate that Forward Error Correction (FEC) is unnecessary and may reduce effective quality in this regime.
+The representation follows the *holographic* principle that information should be distributed rather than localized, so that partial or imperfect delivery still yields a usable picture. In practice the codec realizes this as a sparse, motion-adaptive, keyframe-free pipeline built on per-patch temporal differencing, adaptive quantization, run-length coding and Zstandard entropy compression, with an efficient colour extension. It targets the operational regimes that matter for **surveillance, unmanned aerial platforms and telemedicine** — where continuous, reliable awareness matters more than resolution.
 
 ---
 
 ## 🧠 Core Innovation
 
-Unlike conventional predictive codecs (H.264/H.265) that suffer from extreme fragility due to keyframes and inter-frame dependencies, this framework introduces a **Continuous Holographic Compression Model**. By mapping patches into a high-dimensional latent space via geometric embedding and leveraging sparse reconstruction (OMP over DCT dictionary), the stream exhibits intrinsic resilience to data loss. 
+Unlike conventional predictive codecs (H.264/H.265), which are fragile because a lost inter-frame corrupts everything until the next keyframe, this framework uses a **continuous, motion-adaptive, keyframe-free patch coder**. Each picture is reduced to a working patch; for every patch the encoder takes a three-way decision:
 
-Instead of freezing or collapsing abruptly, the signal achieves **graceful, continuous quality scaling**.
+* **skip** — unchanged within a threshold: nothing is transmitted, so losing its packet cannot corrupt the picture,
+* **delta** — the residual is quantized with an adaptive scale and transmitted (the steady-state low-cost path),
+* **intra** — a full patch is sent, refreshing the reference and bounding any accumulated error.
 
-### Key System Properties:
-* **Keyframe-Free Architecture:** Eliminates propagation errors and structural stream collapse.
-* **Intrinsic Robustness:** Information is non-localized and redundantly distributed across projection operators; missing packets result only in minor, localized degradation.
-* **FEC-Free Optimization:** Demonstrates that Forward Error Correction reduces effective signal quality in extreme bandwidth regimes, proving that raw, sparse geometric data maximizes throughput.
+This yields the properties that matter on a lossy, high-latency channel:
 
-## 🛠️ System Pipeline & Architecture
+* **Keyframe-free architecture.** No mandatory periodic reference frame; the frame rate adapts to the link.
+* **Graceful, continuous degradation.** Quality scales instead of collapsing.
+* **Immediate recovery.** A lost frame is repaired by the next complete frame.
+* **Intrinsic robustness.** Skipped patches transmit no information, so loss cannot produce a stream stall.
+* **FEC-free.** Forward Error Correction spends scarce bits that reduce effective quality; in this regime it is better left off.
 
-1. **Acquisition:** Real-time frame capture via OpenCV / FFmpeg.
-2. **Mathematical Processing:** High-dimensional embedding $\phi:\mathbb{R}^{n}\rightarrow\mathbb{R}^{D}$ and adaptive multi-view projection.
-3. **Sparse Coding:** Orthogonal Matching Pursuit (OMP) optimized over a discrete cosine transform (DCT) dictionary.
-4. **Transport:** Zstandard entropy compression, UDP packetization, and RTSP/WebRTC relaying via MediaMTX.
+### System pipeline
 
----
-
-## 💻 Quick Start & Usage Examples
-
-The framework uses a unified CLI binary `mio_codec_cli_opencv_full.exe` for both sending and receiving video and audio streams via UDP.
-
-### 1. Video Receiver Setup
-To start listening for an incoming video stream on port 5000 and launch the local web server component:
-
-mio_codec_cli_opencv_full.exe stream-recv-webcam-full udp://0.0.0.0:5000 out_webdir=web "opts=http_port=8080,mtu=1200,profile=medium,xdel=20,ydel=3,fec=off"
-
-### 2. Video Sender Setup
-To capture from your webcam and stream to the receiver's IP address (replace 1.2.3.4 with your target IP):
-
-mio_codec_cli_opencv_full.exe stream-send-webcam-full udp://1.2.3.4:5000 "opts=w=320,h=240,fps=20,mtu=1200,profile=medium,dur=0,xdel=20,ydel=3,fec=off"
-
-### 3. Audio Receiver Setup
-To listen for incoming synchronized audio streams on port 5001:
-
-mio_codec_cli_opencv_full.exe stream-recv-audio udp://0.0.0.0:5001
-
-### 4. Audio Sender Setup
-To capture audio from your local hardware microphone and stream it to the receiver:
-
-mio_codec_cli_opencv_full.exe stream-send-audio udp://1.2.3.4:5001 "Gruppo microfoni (Realtek(R) Audio)"
-
-*Note: For single-machine local testing, you can loop back the traffic or use an external UDP port-forwarding/remap utility such as portmap.io.*
+1. **Acquisition** — real-time frame capture via OpenCV / FFmpeg.
+2. **Patch processing** — reduce to a working patch and take the per-patch mode decision (skip / delta / intra) against a local reference.
+3. **Adaptive quantization** — per-frame scale from a robust (MAD) estimate of the residual.
+4. **Entropy coding** — run-length encoding + Zstandard compression.
+5. **Colour** — a low-resolution chroma plane, sent only when it changes, upscaled and saturation-boosted.
+6. **Transport** — UDP packetization with fragmentation and a checksum, reassembled on the receiver.
+7. **Delivery** — RTSP / WebRTC relay via MediaMTX.
 
 ---
 
-## ⚙️ Advanced Parameter Tuning (opts)
+## 💻 Quick Start & Usage
 
-You can fine-tune the holographic compression pipeline using the comma-separated options string:
+The framework uses a unified CLI binary for sending and receiving video and audio streams over UDP.
 
-| Parameter | Allowed Values | Description |
+### 1. Video Receiver
+
+```bat
+mio_codec_cli_opencv_full_color.exe stream-recv-webcam-full udp://0.0.0.0:5000 out_webdir=web "opts=http_port=8080,mtu=1200,profile=medium,xdel=20,ydel=3,fec=off"
+```
+
+### 2. Video Sender
+
+```bat
+mio_codec_cli_opencv_full_color.exe stream-send-webcam-full udp://1.2.3.4:5000 "opts=w=320,h=240,fps=20,mtu=1200,profile=medium,dur=0,audio=on,audio_device=Gruppo microfoni (Realtek(R) Audio),audio_sr=48000,xdel=20,ydel=3,fec=off"
+```
+
+> `audio=on` embeds the captured audio (Opus/OGG) directly in the picture stream, so the receiver plays it alongside the video. If `audio=off`, video only.
+
+### 3. Standalone Audio Receiver (RTP)
+
+```bat
+mio_codec_cli_opencv_full_color.exe stream-recv-audio udp://0.0.0.0:5001
+```
+
+### 4. Standalone Audio Sender (RTP)
+
+```bat
+mio_codec_cli_opencv_full_color.exe stream-send-audio udp://1.2.3.4:5001 "Gruppo microfoni (Realtek(R) Audio)"
+```
+
+*Note: for single-machine local testing you can loop the traffic back, or use an external UDP port-forwarding/remap utility such as portmap.io.*
+
+---
+
+## 🔧 Build (MSVC)
+
+Open an **x64 Native Tools Command Prompt for VS** and run (adjust the OpenCV path if yours differs):
+
+```bat
+cl /EHsc /std:c++17 mio_codec_cli_opencv_full_color.cpp ^
+   /I "C:\opencv\build\include" ^
+   /link /LIBPATH:"C:\opencv\build\x64\vc15\lib" opencv_world455.lib zstd.lib Ws2_32.lib ^
+   /Fe:mio_codec_cli_opencv_full_color.exe
+```
+
+> **Important:** sender and receiver must both run the same binary / format. The colour version writes an extended block header, so a stream encoded with this build must be decoded by this build.
+
+---
+
+## ⚙️ Advanced Parameter Tuning (`opts`)
+
+| Parameter | Allowed values | Description |
 | :--- | :--- | :--- |
-| profile | extra, low, medium | Controls processing depth and resource allocation profiles. |
-| xdel | Integer (e.g., 20) | Frame-change percentage threshold to trigger a complete geometric patch refresh. Lowering this value improves visual accuracy but increases bandwidth requirements. |
-| ydel | Integer (e.g., 3) | Threshold percentage used to flag a frame area as "unchanged". Lowering this parameter improves fluid motion rendering at the cost of higher bandwidth. |
-| fec | on \| off | Toggles Forward Error Correction for damaged packet recovery. Recommended: off. As demonstrated in the paper, disabling FEC maximizes effective network throughput and signal consistency under extreme bandwidth constraints. |
-| mtu | Integer (e.g., 1200) | Maximum Transmission Unit size for UDP packetization to prevent fragmentation over legacy links. |
+| `w`, `h` | int (e.g. `320`, `240`) | Capture resolution. |
+| `fps` | double (e.g. `20`) | Nominal frame rate; the codec adapts the effective rate to the link. |
+| `profile` | `extra`, `low`, `medium` | Working resolution / quality profile. `medium` carries both audio and colour. |
+| `xdel` | int (e.g. `20`) | Frame-change threshold to trigger a full patch refresh (intra). Lower = better accuracy, more bandwidth. |
+| `ydel` | int (e.g. `3`) | Threshold marking a patch as “unchanged” (skip). Lower = smoother motion, more bandwidth. |
+| `fec` | `on` \| `off` | Forward Error Correction. Recommended **off** (it reduces effective quality in this regime). |
+| `mtu` | int (e.g. `1200`) | UDP MTU for packetization. |
+| `audio` | `on` \| `off` | Embed audio in the picture stream. |
+| `audio_device` | string | Capture device name. |
+| `audio_sr` | int (e.g. `48000`) | Audio sample rate. |
+
+### Colour parameters (defined as constants in the source)
+
+| Constant | Purpose |
+| :--- | :--- |
+| `CHROMA_RATIO` | Chroma plane side as a fraction of the luma patch (≈1/6). Lower = less colour, more bandwidth headroom. |
+| `CHROMA_GAIN` | Saturation boost to counter subsampling desaturation. `1.0` off; ~`1.3` recommended. |
+| `CHROMA_SKIP_MSE` | How much a region must change before its colour is re-sent. Higher = colour updates less often (saves bandwidth). |
 
 ---
 
 ## 🎓 Citation
 
-If you use this research, the video codec concept, or the compiled binaries in an academic or professional context, please cite the official paper:
+If you use this research, the codec concept, or the compiled binaries in an academic or professional context, please cite the paper:
 
-
-Rufo, D. (2026). Continuous Keyframe-Free Holographic Compression for Real-Time Audio-Video Streaming over Ultra-Low Bandwidth 2G Networks (Version 1.0.0). Zenodo. [https://doi.org/10.5281/zenodo.20406856](https://doi.org/10.5281/zenodo.20406856)
+> Rufo, D. (2026). Continuous Keyframe-Free Compression for Real-Time Audio-Video Streaming over Ultra-Low Bandwidth 2G Networks (Version 1.0.0). Zenodo. [https://doi.org/10.5281/zenodo.20406856](https://doi.org/10.5281/zenodo.20406856)
 
 ---
 
 ## 🤝 Commercial Inquiries & Collaborations
-This work is part of a potential patent disclosure. For inquiries regarding commercial licensing, production-grade implementations, or research collaborations, please contact the author at:
-xdaniele.rufox@gmail.com
 
----
-*© 2026 - Continuous Keyframe-Free Holographic Compression 
----
+This work is part of a potential patent disclosure. For commercial licensing, production-grade implementations, or research collaborations, contact:
+
+**xdaniele.rufox@gmail.com**
 
 ---
 
-### Support my Research 🚀
-If you find this project useful for your benchmarks or academic evaluation, consider supporting my independent research:
+## Support my Research 🚀
+
+If you find this project useful for your benchmarks or academic evaluation, consider supporting this independent research:
 
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://paypal.me/xdanielex272)
 [![Donate with BTC](https://img.shields.io/badge/Donate-Bitcoin-orange.svg)](#)
@@ -121,3 +167,5 @@ If you find this project useful for your benchmarks or academic evaluation, cons
 * **Tether (USDT - TRC20):** `TA3m7pqk1mTgZtFQHf7KufAqnaqsN95kPh`
 
 ---
+
+*© 2026 - Continuous Keyframe-Free Compression*
