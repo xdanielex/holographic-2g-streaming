@@ -23,12 +23,6 @@ A C++ codec for real-time audio-video streaming engineered to deliver a **stable
 
 ---
 
-## 📺 Live Video Demonstration
-
-[![Watch the 2G Streaming Demo](https://img.youtube.com/vi/2jCk43ZhJ_0/maxresdefault.jpg)](https://www.youtube.com/watch?v=2jCk43ZhJ_0)
-
----
-
 ## 📝 Abstract
 
 A real-time audio-video streaming system for genuine low-bandwidth degraded links — 2G/EDGE cellular and high-cost satellite uplinks — where conventional predictive codecs fail. The design departs from the classic keyframe + inter-frame predictive model: frames are encoded as a sequence of **patch-level modes** that are autonomously decodable, so no picture depends on a long chain of earlier pictures. The result is a stream that **degrades gracefully under packet loss instead of freezing** — when fragments are dropped the effective frame rate dips and then recovers, but the transmission never stalls.
