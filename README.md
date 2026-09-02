@@ -23,6 +23,12 @@ A C++ codec for real-time audio-video streaming engineered to deliver a **stable
 
 ---
 
+## 📺 Live Video Demonstration
+
+[![Watch the 2G Streaming Demo](https://img.youtube.com/vi/2jCk43ZhJ_0/maxresdefault.jpg)](https://www.youtube.com/watch?v=2jCk43ZhJ_0)
+
+---
+
 ## 📝 Abstract
 
 A real-time audio-video streaming system for genuine low-bandwidth degraded links — 2G/EDGE cellular and high-cost satellite uplinks — where conventional predictive codecs fail. The design departs from the classic keyframe + inter-frame predictive model: frames are encoded as a sequence of **patch-level modes** that are autonomously decodable, so no picture depends on a long chain of earlier pictures. The result is a stream that **degrades gracefully under packet loss instead of freezing** — when fragments are dropped the effective frame rate dips and then recovers, but the transmission never stalls.
@@ -93,28 +99,30 @@ mio_codec_cli_opencv_full_color.exe stream-send-audio udp://1.2.3.4:5001 "Gruppo
 
 ---
 
-## 🔧 Build (MSVC)
+## 🔧 Build
 
-Windows (MSVC)
-Open an x64 Native Tools Command Prompt for VS and run (adjust the OpenCV path if yours differs):
+### Windows (MSVC)
 
-bat
+Open an **x64 Native Tools Command Prompt for VS** and run (adjust the OpenCV path if yours differs):
 
+```bat
 cl /EHsc /std:c++17 mio_codec_cli_opencv_full_color.cpp ^
    /I "C:\opencv\build\include" ^
    /link /LIBPATH:"C:\opencv\build\x64\vc15\lib" opencv_world455.lib zstd.lib Ws2_32.lib ^
    /Fe:mio_codec_cli_opencv_full_color.exe
-Linux (g++)
-A prebuilt Linux binary is included in the repo (
-mio_codec_cli_opencv_full_color
-). To rebuild it from source:
+```
 
-Bash
+### Linux (g++)
 
+A prebuilt Linux binary is included in the repo (`mio_codec_cli_opencv_full_color`). To rebuild it from source:
+
+```bash
 sudo apt-get install -y libopencv-dev libzstd-dev
 g++ -std=c++17 -O2 mio_codec_cli_opencv_full_color.cpp -o mio_codec_cli_opencv_full_color \
     $(pkg-config --cflags opencv4) $(pkg-config --libs opencv4) -lzstd -lpthread
-Runtime dependencies (Linux): the binary links against libopencv_core/imgproc/videoio/imgcodecs (OpenCV 4.x) and libzstd. ffmpeg/ffplay are still needed in PATH for the audio-capture and decode/webcam pipelines. The source is portable across both platforms; the streaming shell differs (Winsock on Windows, POSIX sockets on Linux).
+```
+
+> **Runtime dependencies (Linux):** the binary links against `libopencv_core/imgproc/videoio/imgcodecs` (OpenCV 4.x) and `libzstd`. `ffmpeg`/`ffplay` are still needed in `PATH` for the audio-capture and decode/webcam pipelines. The source is portable across both platforms; the streaming shell differs (`Winsock` on Windows, POSIX sockets on Linux).
 
 > **Important:** sender and receiver must both run the same binary / format. The colour version writes an extended block header, so a stream encoded with this build must be decoded by this build.
 
