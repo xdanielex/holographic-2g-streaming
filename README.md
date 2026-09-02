@@ -95,14 +95,26 @@ mio_codec_cli_opencv_full_color.exe stream-send-audio udp://1.2.3.4:5001 "Gruppo
 
 ## 🔧 Build (MSVC)
 
-Open an **x64 Native Tools Command Prompt for VS** and run (adjust the OpenCV path if yours differs):
+Windows (MSVC)
+Open an x64 Native Tools Command Prompt for VS and run (adjust the OpenCV path if yours differs):
 
-```bat
+bat
+
 cl /EHsc /std:c++17 mio_codec_cli_opencv_full_color.cpp ^
    /I "C:\opencv\build\include" ^
    /link /LIBPATH:"C:\opencv\build\x64\vc15\lib" opencv_world455.lib zstd.lib Ws2_32.lib ^
    /Fe:mio_codec_cli_opencv_full_color.exe
-```
+Linux (g++)
+A prebuilt Linux binary is included in the repo (
+mio_codec_cli_opencv_full_color
+). To rebuild it from source:
+
+Bash
+
+sudo apt-get install -y libopencv-dev libzstd-dev
+g++ -std=c++17 -O2 mio_codec_cli_opencv_full_color.cpp -o mio_codec_cli_opencv_full_color \
+    $(pkg-config --cflags opencv4) $(pkg-config --libs opencv4) -lzstd -lpthread
+Runtime dependencies (Linux): the binary links against libopencv_core/imgproc/videoio/imgcodecs (OpenCV 4.x) and libzstd. ffmpeg/ffplay are still needed in PATH for the audio-capture and decode/webcam pipelines. The source is portable across both platforms; the streaming shell differs (Winsock on Windows, POSIX sockets on Linux).
 
 > **Important:** sender and receiver must both run the same binary / format. The colour version writes an extended block header, so a stream encoded with this build must be decoded by this build.
 
