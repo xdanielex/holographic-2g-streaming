@@ -4,8 +4,6 @@ A C++ codec for real-time audio-video streaming engineered to deliver a **stable
 
 **Practical application:** The compression approach described here is used in [Holographic 2G](https://holographic2g.it/), an Android app for one-to-one audio and video calls designed for bandwidth-constrained IP links.
 
-[Download the full tech paper (PDF)](STREAMING2g.pdf)
-
 ---
 
 ## ✨ What's new in this version
