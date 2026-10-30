@@ -2,7 +2,7 @@
 
 A C++ codec for real-time audio-video streaming engineered to deliver a **stable, smooth feed over genuine ultra-low-bandwidth 2G / EDGE networks** and high-cost satellite uplinks — links with high latency and heavy packet loss where conventional predictive codecs fail.
 
-**Practical application:** The compression approach described here is used in [Holographic 2G](https://holographic2g.it/), an Android app for one-to-one audio and video calls designed for bandwidth-constrained IP links.
+**Practical application:** The compression approach described here is used in [Holographic 2G](https://holographic2g.it/), an Android app for one-to-one audio and video calls designed for bandwidth-constrained IP links. The app is also available on [APKPure](https://apkpure.com/p/com.holographic.twog).
 
 ---
 
